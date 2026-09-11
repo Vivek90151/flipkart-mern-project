@@ -10,7 +10,14 @@ node {
         sh 'ls -la'
     }
 
-     stage('Build Docker Image') {
-        sh "docker build -t ${JOB_NAME}:v1.${BUILD_ID} ."
+    stage('Build Frontend Image') {
+    steps {
+        sh 'docker build -t flipkart-frontend:v1.7 ./frontend'
+    }
+}
+
+stage('Build Backend Image') {
+    steps {
+        sh 'docker build -t flipkart-backend:v1.7 ./backend'
     }
 }
