@@ -1,4 +1,4 @@
-```groovy
+
 node {
 
     stage('Checkout') {
@@ -17,4 +17,4 @@ node {
         sh 'docker images | grep flipkart'
     }
 }
-```
+
