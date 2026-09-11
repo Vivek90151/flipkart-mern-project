@@ -5,17 +5,38 @@ node {
     }
 
     stage('Debug') {
-        sh 'pwd'
-        sh 'ls -la'
-        sh 'ls -la frontend'
-        sh 'ls -la backend'
+        sh '''
+            echo "===== ROOT ====="
+            pwd
+            ls -la
+
+            echo "===== FRONTEND ====="
+            ls -la frontend
+
+            echo "===== BACKEND ====="
+            ls -la backend
+        '''
     }
 
     stage('Build Frontend Image') {
-        sh 'docker build -t flipkart-frontend:v1.7 ./frontend'
+        sh '''
+            docker build \
+            -t flipkart-frontend:v1.7 \
+            ./frontend
+        '''
     }
 
     stage('Build Backend Image') {
-        sh 'docker build -t flipkart-backend:v1.7 ./backend'
+        sh '''
+            docker build \
+            -t flipkart-backend:v1.7 \
+            .
+        '''
+    }
+
+    stage('Docker Images') {
+        sh '''
+            docker images | grep flipkart
+        '''
     }
 }
