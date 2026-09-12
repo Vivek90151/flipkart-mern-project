@@ -12,15 +12,16 @@ node {
         sh 'docker build -t vivekbhardwaj581/flipkart-backend:v1.7 -f Dockerfile.backend .'
     }
 
-    stage('Docker Login') {
-        withCredentials([usernamePassword(
-            credentialsId: 'dockerhubpassword',
-            usernameVariable: 'DOCKER_USER',
-            passwordVariable: 'DOCKER_PASS'
-        )]) {
-            sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+  stage("Docker Login") {
+
+        withCredentials([string(credentialsId: 'dockerhubpassword', variable: 'dockerhubpassword')]) {
+
+            sh "docker login -u vivekbhardwaj581 -p ${dockerhubpassword}"
+
         }
     }
+
+
 
     stage('Push Images') {
         sh 'docker push vivekbhardwaj581/flipkart-frontend:v1.7'
