@@ -1,4 +1,3 @@
-
 node {
 
     stage('Checkout') {
@@ -6,11 +5,52 @@ node {
     }
 
     stage('Build Frontend Image') {
-        sh 'docker build -t flipkart-frontend:v1.7 ./frontend'
+        sh 'docker build -t vivekbhardwaj581/flipkart-frontend:v1.7 ./frontend'
     }
 
     stage('Build Backend Image') {
-        sh 'docker build -t flipkart-backend:v1.7 -f Dockerfile.backend .'
+        sh 'docker build -t vivekbhardwaj581/flipkart-backend:v1.7 -f Dockerfile.backend .'
+    }
+
+    stage('Docker Login') {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhubpassword',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+            sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+        }
+    }
+
+    stage('Push Images') {
+        sh 'docker push vivekbhardwaj581/flipkart-frontend:v1.7'
+        sh 'docker push vivekbhardwaj581/flipkart-backend:v1.7'
+    }
+
+    stage('Remove Old Containers') {
+        sh 'docker rm -f frontend backend || true'
+    }
+
+    stage('Deploy Backend') {
+        sh '''
+        docker run -d \
+          --name backend \
+          --link mongodb:mongodb \
+          -p 4000:4000 \
+          vivekbhardwaj581/flipkart-backend:v1.7
+        '''
+    }
+
+    stage('Deploy Frontend') {
+        sh '''
+        docker run -d \
+          --name frontend \
+          -p 8000:80 \
+          vivekbhardwaj581/flipkart-frontend:v1.7
+        '''
+    }
+
+    stage('Verify Deployment') {
+        sh 'docker ps'
     }
 }
-
