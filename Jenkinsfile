@@ -12,9 +12,5 @@ node {
     stage('Build Backend Image') {
         sh 'docker build -t flipkart-backend:v1.7 -f Dockerfile.backend .'
     }
-
-    stage('Check Images') {
-        sh 'docker images | grep flipkart'
-    }
 }
 
